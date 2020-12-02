@@ -63,7 +63,7 @@ public class CustomOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
             TokenRequest authorizationRequest = (TokenRequest) session.getAttribute(SAVED_AUTHORIZATION_REQUEST_SESSION_ATTRIBUTE_NAME);
             if (authorizationRequest != null) {
                 session.removeAttribute(SAVED_AUTHORIZATION_REQUEST_SESSION_ATTRIBUTE_NAME);
-
+                session.removeAttribute("Principal");
 
                 LOG.debug("createAuthorizationRequest(): return saved copy.");
 

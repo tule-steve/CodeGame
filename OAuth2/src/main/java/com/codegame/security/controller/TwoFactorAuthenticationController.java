@@ -7,15 +7,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -46,7 +52,7 @@ public class TwoFactorAuthenticationController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public String auth(@ModelAttribute(value="secret") String secret, BindingResult result, Model model) {
+    public String auth(@ModelAttribute(value="secret") String secret, BindingResult result, Model model, HttpServletResponse response) {
     	LOG.debug("auth() HTML.Post");
         
     	if (userEnteredCorrect2FASecret(secret)) {
@@ -73,9 +79,20 @@ public class TwoFactorAuthenticationController {
     	updatedAuthorities.add(newAuthority);
     	updatedAuthorities.addAll(oldAuthorities);
 
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(false);
+        User principal;
+        if (session != null) {
+            principal = (User)session.getAttribute("Principal");
+        } else {
+            principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        }
+
+        session.getAttribute("Authorization");
+
     	SecurityContextHolder.getContext().setAuthentication(
     	        new UsernamePasswordAuthenticationToken(
-                        SecurityContextHolder.getContext().getAuthentication().getPrincipal(),
+                        principal,
                         SecurityContextHolder.getContext().getAuthentication().getCredentials(),
                         updatedAuthorities)
     	);

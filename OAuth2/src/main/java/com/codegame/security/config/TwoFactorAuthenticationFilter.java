@@ -87,9 +87,9 @@ public class TwoFactorAuthenticationFilter extends OncePerRequestFilter {
                 request.getSession()
                        .setAttribute(CustomOAuth2RequestFactory.SAVED_AUTHORIZATION_REQUEST_SESSION_ATTRIBUTE_NAME,
                                      authorizationRequest);
+                request.getSession().setAttribute("Principal", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 
                 LOG.debug("doFilterInternal(): redirecting to {}", TwoFactorAuthenticationController.PATH);
-
                 // redirect the the page where the user needs to enter the two factor authentication code
                 redirectStrategy.sendRedirect(request, response,
                                               TwoFactorAuthenticationController.PATH
