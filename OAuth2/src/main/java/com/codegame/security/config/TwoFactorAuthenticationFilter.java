@@ -4,11 +4,13 @@ import com.codegame.security.controller.TwoFactorAuthenticationController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.*;
+import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
@@ -40,6 +42,9 @@ public class TwoFactorAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private ClientDetailsService clientDetailsService;
+
+    @Autowired
+    TokenEndpoint tokenEndpoint;
 
     //These next two are added as a test to avoid the compilation errors that happened when they were not defined.
     public static final String ROLE_TWO_FACTOR_AUTHENTICATED = "ROLE_TWO_FACTOR_AUTHENTICATED";
@@ -74,13 +79,17 @@ public class TwoFactorAuthenticationFilter extends OncePerRequestFilter {
             Principal principal = request.getUserPrincipal();
             ClientDetails authenticatedClient = clientDetailsService.loadClientByClientId(getClientId(principal));
 
-            TokenRequest authorizationRequest = oAuth2RequestFactory.createTokenRequest(paramsFromRequest(request), authenticatedClient);
+            final Map<String, String> params = paramsFromRequest(request);
+            TokenRequest authorizationRequest = oAuth2RequestFactory.createTokenRequest(params, authenticatedClient);
             /* Check if the client's authorities (authorizationRequest.getAuthorities()) or the user's ones
                require two factor authentication. */
             if (twoFactorAuthenticationEnabled(authenticatedClient.getAuthorities()) ||
                 twoFactorAuthenticationEnabled(SecurityContextHolder.getContext()
                                                                     .getAuthentication()
                                                                     .getAuthorities())) {
+
+
+                tokenEndpoint.postAccessToken((Principal) SecurityContextHolder.getContext().getAuthentication(), params);
                 // Save the authorizationRequest in the session. This allows the CustomOAuth2RequestFactory
                 // to return this saved request to the AuthenticationEndpoint after the user successfully
                 // did the two factor authentication.
@@ -92,7 +101,7 @@ public class TwoFactorAuthenticationFilter extends OncePerRequestFilter {
                 LOG.debug("doFilterInternal(): redirecting to {}", TwoFactorAuthenticationController.PATH);
                 // redirect the the page where the user needs to enter the two factor authentication code
                 redirectStrategy.sendRedirect(request, response,
-                                              TwoFactorAuthenticationController.PATH
+                                              TwoFactorAuthenticationController.PATH + "/" + request.getParameter("username")
                 );
                 return;
             }

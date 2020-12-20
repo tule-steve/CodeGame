@@ -43,14 +43,13 @@ public class AdminController {
     }
 
     @GetMapping(value = "/item/{itemId}")
-    public List<String> getCodes(@PathVariable Long itemId){
+    public Object getCodes(@PathVariable Long itemId){
         return adminSvc.getCodeByItem(itemId);
     }
 
     @PostMapping(value = "/item/create")
     public ResponseEntity createItem(@RequestBody Item request){
-        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpSession session = attr.getRequest().getSession(false);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         adminSvc.createItem(request);
         return ResponseEntity.ok("created item");
     }

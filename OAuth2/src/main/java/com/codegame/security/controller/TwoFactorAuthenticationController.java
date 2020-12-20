@@ -1,9 +1,15 @@
 package com.codegame.security.controller;
 
+import com.codegame.exception.GlobalValidationException;
+import com.codegame.security.DTOs.LoginResponse;
 import com.codegame.security.config.CustomOAuth2RequestFactory;
 import com.codegame.security.config.TwoFactorAuthenticationFilter;
+import com.codegame.security.services.OTPService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,33 +18,34 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Controller
 @RequestMapping(TwoFactorAuthenticationController.PATH)
-
+@RequiredArgsConstructor
 public class TwoFactorAuthenticationController {
     private static final Logger LOG = LoggerFactory.getLogger(TwoFactorAuthenticationController.class);
     
     public static final String PATH = "/secure/two_factor_authentication";
 
-    @RequestMapping(method = RequestMethod.GET)
-    public String auth(HttpServletRequest request, HttpSession session) {
+
+    final private OTPService otpSvc;
+
+
+    @RequestMapping(path="/{email}", method = RequestMethod.GET)
+    public ResponseEntity auth(@PathVariable("email") String email, HttpSession session) {
         if (isAuthenticatedWithAuthority(TwoFactorAuthenticationFilter.ROLE_TWO_FACTOR_AUTHENTICATED)) {
             LOG.debug("User {} already has {} authority - no need to enter code again", TwoFactorAuthenticationFilter.ROLE_TWO_FACTOR_AUTHENTICATED);
-            
             //throw ....;
         }
         else if (session.getAttribute(CustomOAuth2RequestFactory.SAVED_AUTHORIZATION_REQUEST_SESSION_ATTRIBUTE_NAME) == null) {
@@ -46,22 +53,28 @@ public class TwoFactorAuthenticationController {
             //throw ....;
         }
 
-        LOG.debug("auth() HTML.Get"); 
-        
-        return "loginSecret"; // Show the form to enter the 2FA secret
+        LOG.debug("auth() HTML.Get");
+        try {
+            otpSvc.sendEmail(email);
+        } catch (Exception ex){
+            LOG.error("Error on sending the OTP email", ex);
+            throw new GlobalValidationException("error on sending OTP email");
+        }
+//        return "loginSecret"; // Show the form to enter the 2FA secret
+//        return ;
+        return ResponseEntity.ok(new LoginResponse(HttpStatus.OK, email, "sent the OTP to email"));
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public String auth(@ModelAttribute(value="secret") String secret, BindingResult result, Model model, HttpServletResponse response) {
+    public Object auth(@ModelAttribute(value="secret") String secret, @ModelAttribute(value="email") String email, BindingResult result, Model model, HttpServletResponse response) {
     	LOG.debug("auth() HTML.Post");
         
-    	if (userEnteredCorrect2FASecret(secret)) {
+    	if (userEnteredCorrect2FASecret(secret, email)) {
             addAuthority(TwoFactorAuthenticationFilter.ROLE_TWO_FACTOR_AUTHENTICATED);
             return "forward:/oauth/token"; // Continue with the OAuth flow
         }
-    	
-    	model.addAttribute("isIncorrectSecret", true);
-        return "loginSecret"; // Show the form to enter the 2FA secret again
+
+        return ResponseEntity.badRequest().body(new LoginResponse(HttpStatus.BAD_REQUEST, email, "OTP is not matching")); // Show the form to enter the 2FA secret again
     }
     
     private boolean isAuthenticatedWithAuthority(String checkedAuthority){
@@ -100,13 +113,15 @@ public class TwoFactorAuthenticationController {
     	return true;
     }
     
-    private boolean userEnteredCorrect2FASecret(String secret){
+    private boolean userEnteredCorrect2FASecret(String secret, String email){
     	/* later on, we need to pass a temporary secret for each user and control it here */
     	/* this is just a temporary way to check things are working */
     	
-    	if(secret.equals("123"))
-    		return true;
-    	else;
-    		return false;
+    	String otp = String.valueOf(otpSvc.getOtp(email));
+    	if(otp.length() > 2 && otp.equals(secret)){
+    	    return true;
+        }else {
+    	    return false;
+        }
     }
 }

@@ -77,7 +77,7 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
                 .scopes("read_profile_info")
                 .resourceIds("oauth2-resource")
                 .redirectUris("/login")
-                .accessTokenValiditySeconds(5000)
-                .refreshTokenValiditySeconds(50000);
+                .accessTokenValiditySeconds(3000)
+                .refreshTokenValiditySeconds(3000);
     }
 }

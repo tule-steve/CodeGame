@@ -38,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .inMemoryAuthentication()
-                .withUser("humptydumpty")
+                .withUser("stephenle1412@gmail.com")
                 .password(passwordEncoder().encode("123456"))
                 .roles("ADMIN");
     }
@@ -64,6 +64,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public OTPTemplate getOTPTemplate() throws Exception{
+        return new OTPTemplate();
     }
 
 }

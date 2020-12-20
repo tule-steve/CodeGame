@@ -50,9 +50,9 @@ public class AdminService {
         giftRepo.saveAll(refundCodes);
     }
 
-    public List<String> getCodeByItem(Long itemId) {
+    public List<GiftCard> getCodeByItem(Long itemId) {
         Item item = itemRepo.findById(itemId).orElseThrow(() -> new GlobalValidationException("Item not exist"));
-        return giftRepo.getCodeByItemId(item.getId(), GiftCard.GiftCardStatus.NOT_USED);
+        return giftRepo.getCodeByItemId(item.getId());
     }
 
     public void createItem(Item data){

@@ -5,6 +5,7 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,9 +44,11 @@ public class Item {
     @Column(name = "id")
     Long id;
 
+    @NotBlank(message = "description id is required.")
     @Column(name = "description")
     String description;
 
+    @NotBlank(message = "price id is required.")
     @Column(name = "price")
     int price = 0;
 
