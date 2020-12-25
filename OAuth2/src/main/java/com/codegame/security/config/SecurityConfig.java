@@ -22,7 +22,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //            .antMatchers("/oauth/token").permitAll()
 //            .anyRequest().authenticated()
 //            .and().httpBasic();
-        http.csrf().disable();
+        http.cors().and().csrf().disable();
         //2fa
         //
         //            .antMatchers("/api/admin/**").access("hasRole('ADMIN')")

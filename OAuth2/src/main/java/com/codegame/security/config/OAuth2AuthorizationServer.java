@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -13,7 +15,13 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @Order(10)
@@ -38,18 +46,27 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        Map<String, CorsConfiguration> corsConfigMap = new HashMap<>();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+
+        config.setAllowedOrigins(Collections.singletonList("*"));
+        config.setAllowedMethods(Collections.singletonList("*"));
+        config.setAllowedHeaders(Collections.singletonList("*"));
+        corsConfigMap.put("/oauth/token", config);
+        endpoints.getFrameworkEndpointHandlerMapping().setCorsConfigurations(corsConfigMap);
         endpoints.authenticationManager(authenticationManager)
                  //2fa
                  .requestFactory(customOAuth2RequestFactory());
     }
 
     @Bean
-    public DefaultOAuth2RequestFactory customOAuth2RequestFactory(){
+    public DefaultOAuth2RequestFactory customOAuth2RequestFactory() {
         return new CustomOAuth2RequestFactory(clientDetailsService);
     }
 
     @Bean
-    public FilterRegistrationBean twoFactorAuthenticationFilterRegistration(){
+    public FilterRegistrationBean twoFactorAuthenticationFilterRegistration() {
         FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.setFilter(twoFactorAuthenticationFilter());
         registration.addUrlPatterns("/oauth/token");
@@ -58,10 +75,9 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
     }
 
     @Bean
-    public TwoFactorAuthenticationFilter twoFactorAuthenticationFilter(){
+    public TwoFactorAuthenticationFilter twoFactorAuthenticationFilter() {
         return new TwoFactorAuthenticationFilter();
     }
-
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
