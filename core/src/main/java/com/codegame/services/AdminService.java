@@ -6,36 +6,26 @@ import com.codegame.dto.RefundRequest;
 import com.codegame.exception.GlobalValidationException;
 import com.codegame.model.GiftCard;
 import com.codegame.model.Item;
-import com.codegame.model.VoucherRelationship;
 import com.codegame.repositories.GiftCodeRepository;
 import com.codegame.repositories.ItemRepository;
-import com.codegame.repositories.VoucherRelationshipRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.xml.bind.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class AdminService {
 
-    final VoucherRelationshipRepository voucherRepo;
-
     final GiftCodeRepository giftRepo;
 
     final ItemRepository itemRepo;
 
     final EntityManager em;
-
-    public Optional<VoucherRelationship> findById(Long id) {
-        return voucherRepo.findById(id);
-    }
 
     public void refund(RefundRequest request) {
         List<GiftCard> refundCodes = giftRepo.getRefundCodes(request.getCodes(), request.getOrderId());

@@ -17,6 +17,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 public class GiftCard {
 
     public enum GiftCardStatus {
+        AVAILABLE,
         USED,
         NOT_USED,
         REFUNDING,
@@ -32,10 +33,6 @@ public class GiftCard {
     @Column(name = "gift_code")
     String giftCode;
 
-    @Column(name = "order_id")
-    @JsonIgnore
-    Long orderId;
-
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     GiftCardStatus status;
@@ -50,4 +47,9 @@ public class GiftCard {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "item_id", updatable = false, nullable = false)
     Item item;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "order_id")
+    Order order;
 }
