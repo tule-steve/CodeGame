@@ -5,6 +5,7 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -48,7 +49,7 @@ public class Item {
     @Column(name = "description")
     String description;
 
-    @NotBlank(message = "price id is required.")
+    @Min(1)
     @Column(name = "price")
     int price = 0;
 

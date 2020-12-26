@@ -9,8 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -32,8 +34,7 @@ public class AdminController {
     }
 
     @PostMapping(value = "/item/create")
-    public ResponseEntity createItem(@RequestBody Item request) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ResponseEntity createItem(@RequestBody List<Item> request) {
         adminSvc.createItem(request);
         return ResponseEntity.ok("created item");
     }
@@ -43,6 +44,7 @@ public class AdminController {
         adminSvc.addGiftCard(request);
         return ResponseEntity.ok("added " + request.getCodes().size() + " gift card");
     }
+
 
     @GetMapping(value = "/items")
     public List<ItemDto> getCodes() {

@@ -45,8 +45,8 @@ public class AdminService {
         return giftRepo.getCodeByItemId(item.getId());
     }
 
-    public void createItem(Item data){
-        itemRepo.save(data);
+    public void createItem(List<Item> data){
+        itemRepo.saveAll(data);
     }
 
     public void addGiftCard(AddGiftCardRequest data){
