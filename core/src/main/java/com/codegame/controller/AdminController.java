@@ -5,14 +5,11 @@ import com.codegame.dto.ItemDto;
 import com.codegame.dto.RefundRequest;
 import com.codegame.model.Item;
 import com.codegame.services.AdminService;
+import com.common.dtos.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -25,7 +22,7 @@ public class AdminController {
     @PostMapping(value = "/refund")
     public ResponseEntity refund(@RequestBody RefundRequest request) {
         adminSvc.refund(request);
-        return ResponseEntity.ok("Received the refund request.");
+        return ResponseEntity.ok(CommonResponse.buildOkData("Received the refund request."));
     }
 
     @GetMapping(value = "/item/{itemId}")
@@ -36,15 +33,14 @@ public class AdminController {
     @PostMapping(value = "/item/create")
     public ResponseEntity createItem(@RequestBody List<Item> request) {
         adminSvc.createItem(request);
-        return ResponseEntity.ok("created item");
+        return ResponseEntity.ok(CommonResponse.buildOkData("Created " + request.size() + " items"));
     }
 
     @PostMapping(value = "/giftcard/create")
     public ResponseEntity addGiftCard(@RequestBody AddGiftCardRequest request) {
         adminSvc.addGiftCard(request);
-        return ResponseEntity.ok("added " + request.getCodes().size() + " gift card");
+        return ResponseEntity.ok(CommonResponse.buildOkData("added " + request.getCodes().size() + " gift card"));
     }
-
 
     @GetMapping(value = "/items")
     public List<ItemDto> getCodes() {

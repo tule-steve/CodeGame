@@ -44,10 +44,6 @@ public class Order {
             gc.setStatus(GiftCard.GiftCardStatus.USED);
         });
 
-        codes = giftCards;
-    }
-
-    public void addGiftCard(GiftCard gc){
-        codes.add(gc);
+        codes.addAll(giftCards);
     }
 }

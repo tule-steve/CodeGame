@@ -57,7 +57,7 @@ public class AdminService {
             GiftCard gc = new GiftCard();
             gc.setGiftCode(code);
             gc.setItem(item);
-            gc.setStatus(GiftCard.GiftCardStatus.NOT_USED);
+            gc.setStatus(GiftCard.GiftCardStatus.AVAILABLE);
             newGiftCardList.add(gc);
             item.addGiftCard(gc);
         }
