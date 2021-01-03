@@ -14,6 +14,6 @@ public class RefundRequest {
     @NotBlank(message = "Order id is required.")
     Long orderId;
 
-    List<String> codes;
+    List<RefundLineItemDto> codes;
 
 }

@@ -1,5 +1,6 @@
 package com.codegame.exception;
 
+import com.common.dtos.CommonResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.system.SystemProperties;
@@ -45,9 +46,10 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity(sb.toString(), HttpStatus.BAD_REQUEST);
     }
 
+
     @ExceptionHandler(GlobalValidationException.class)
     public final ResponseEntity<Object> handleApplicationExceptions(GlobalValidationException ex) {
-        return new ResponseEntity(ex, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(CommonResponse.buildBadRequestData(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @Override

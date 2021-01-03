@@ -1,11 +1,10 @@
 package com.codegame.model;
 
-import com.codegame.dto.ItemDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +16,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Table(name = "tu_test_order")
 public class Order {
 
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id")
@@ -25,23 +25,36 @@ public class Order {
     @Column(name = "order_id")
     Long orderId;
 
+    @Column(name = "email")
+    String email;
+
     @Column(name = "total_value")
     Long transactionTotal;
 
+    @JsonIgnore
     @Column(name = "order_detail")
     String orderDetail;
+
+    @Column(name = "refund_status")
+    @Enumerated(EnumType.STRING)
+    GiftCard.Status status;
+
+    @Column(name = "refund_date")
+    protected LocalDateTime refundDate;
 
     @Column(name = "created_at")
     @CreationTimestamp
     protected LocalDateTime createdAt;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order")
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = {CascadeType.PERSIST})
     List<GiftCard> codes = new ArrayList<>();
 
-    public void addGiftCards(List<GiftCard> giftCards){
+    public void addGiftCards(List<GiftCard> giftCards, Integer price){
         giftCards.forEach(gc -> {
             gc.setOrder(this);
-            gc.setStatus(GiftCard.GiftCardStatus.USED);
+            gc.setPrice(price);
+            gc.setStatus(GiftCard.Status.USED);
         });
 
         codes.addAll(giftCards);

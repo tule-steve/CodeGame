@@ -16,12 +16,18 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Table(name = "tu_test_gc")
 public class GiftCard {
 
-    public enum GiftCardStatus {
+    public enum Status {
         AVAILABLE,
         USED,
         NOT_USED,
         REFUNDING,
+        APPROVED_FOR_REFUND,
         REFUNDED;
+    }
+
+    public enum RefundType {
+        BY_MONEY,
+        BY_KEY;
     }
 
     @Id
@@ -35,7 +41,14 @@ public class GiftCard {
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    GiftCardStatus status;
+    Status status;
+
+    @Column(name = "refund_type")
+    @Enumerated(EnumType.STRING)
+    RefundType refundType;
+
+    @Column(name = "price")
+    Integer price;
 
     @Column(name = "created_at")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
@@ -52,4 +65,5 @@ public class GiftCard {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id")
     Order order;
+
 }

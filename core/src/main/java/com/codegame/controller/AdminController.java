@@ -4,6 +4,7 @@ import com.codegame.dto.AddGiftCardRequest;
 import com.codegame.dto.ItemDto;
 import com.codegame.dto.RefundRequest;
 import com.codegame.model.Item;
+import com.codegame.model.Setting;
 import com.codegame.services.AdminService;
 import com.common.dtos.CommonResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class AdminController {
 
     final AdminService adminSvc;
 
-    @PostMapping(value = "/refund")
+    @PostMapping(value = "/approach_refund")
     public ResponseEntity refund(@RequestBody RefundRequest request) {
         adminSvc.refund(request);
         return ResponseEntity.ok(CommonResponse.buildOkData("Received the refund request."));
@@ -37,7 +38,7 @@ public class AdminController {
     }
 
     @PostMapping(value = "/giftcard/create")
-    public ResponseEntity addGiftCard(@RequestBody AddGiftCardRequest request) {
+    public ResponseEntity updateSetting(@RequestBody AddGiftCardRequest request) {
         adminSvc.addGiftCard(request);
         return ResponseEntity.ok(CommonResponse.buildOkData("added " + request.getCodes().size() + " gift card"));
     }
@@ -46,4 +47,12 @@ public class AdminController {
     public List<ItemDto> getCodes() {
         return adminSvc.getItemDetails();
     }
+
+    @PostMapping(value = "/setting")
+    public ResponseEntity updateSetting(@RequestBody Setting request) {
+        adminSvc.updateSetting(request);
+        return ResponseEntity.ok(CommonResponse.buildOkData("updated setting"));
+    }
+
+
 }
