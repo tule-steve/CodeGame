@@ -95,6 +95,33 @@ public class AdminService {
         return itemRepo.getItemDetails();
     }
 
+    public void deleteGiftCard(List<String> codeList) {
+        List<GiftCard> deletedCodes = giftRepo.getCode(codeList,
+                                                       GiftCard.Status.REFUNDING);
+        int count = codeList.size();
+        int existingCodeCount = deletedCodes.size();
+
+        if (count != existingCodeCount) {
+            throw new GlobalValidationException("Code list not matching");
+        }
+
+        //        List<GiftCard> refundByMoneyLst = refundCodes.stream()
+        //                                                      .filter(r -> GiftCard.RefundType.BY_MONEY.equals(r.getRefundType()))
+        //                                                      .collect(Collectors.toList());
+        //
+        //        List<GiftCard> refundByKeyLst = refundCodes.stream()
+        //                                                      .filter(r -> GiftCard.RefundType.BY_KEY.equals(r.getRefundType()))
+        //                                                      .collect(Collectors.toList());
+
+
+        deletedCodes.forEach(r -> {
+            r.setOldStatus(r.getStatus());
+            r.setStatus(GiftCard.Status.DELETED);
+        });
+        giftRepo.saveAll(deletedCodes);
+    }
+    
+
     public void updateSetting(Setting newData){
         newData.setId(0L);
         em.merge(newData);

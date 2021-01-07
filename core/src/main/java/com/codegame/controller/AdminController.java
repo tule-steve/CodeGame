@@ -37,10 +37,23 @@ public class AdminController {
         return ResponseEntity.ok(CommonResponse.buildOkData("Created " + request.size() + " items"));
     }
 
+    @PostMapping(value = "/item/update")
+    public ResponseEntity updatePrice(@RequestBody List<Item> request) {
+        adminSvc.createItem(request);
+        return ResponseEntity.ok(CommonResponse.buildOkData("updated " + request.size() + " items"));
+    }
+
     @PostMapping(value = "/giftcard/create")
-    public ResponseEntity updateSetting(@RequestBody AddGiftCardRequest request) {
+    public ResponseEntity AddGiftCard(@RequestBody AddGiftCardRequest request) {
         adminSvc.addGiftCard(request);
         return ResponseEntity.ok(CommonResponse.buildOkData("added " + request.getCodes().size() + " gift card"));
+    }
+
+
+    @PostMapping(value = "/giftcard/delete")
+    public ResponseEntity deleteGiftCard(@RequestBody List<String> codeList) {
+        adminSvc.deleteGiftCard(codeList);
+        return ResponseEntity.ok(CommonResponse.buildOkData("deleted " + codeList.size() + " gift card"));
     }
 
     @GetMapping(value = "/items")

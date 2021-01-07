@@ -13,6 +13,10 @@ public interface GiftCodeRepository extends JpaRepository<GiftCard, Long> {
     @Query("select distinct a from GiftCard a where a.giftCode in :codes and a.order.id = :orderId and a.status = :status order by a.giftCode")
     List<GiftCard> getRefundCodes(List<String> codes, Long orderId, GiftCard.Status status);
 
+
+    @Query("select distinct a from GiftCard a where a.giftCode in :codes and a.status = :status order by a.giftCode")
+    List<GiftCard> getCode(List<String> codes, GiftCard.Status status);
+
     @Query("select distinct a.giftCode from GiftCard a where a.item.id = :itemId and a.status = :status")
     List<String> getCodeByItemId1(Long itemId, GiftCard.Status status);
 

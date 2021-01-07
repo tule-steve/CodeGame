@@ -22,7 +22,8 @@ public class GiftCard {
         NOT_USED,
         REFUNDING,
         APPROVED_FOR_REFUND,
-        REFUNDED;
+        REFUNDED,
+        DELETED;
     }
 
     public enum RefundType {
@@ -42,6 +43,11 @@ public class GiftCard {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     Status status;
+
+    @JsonIgnore
+    @Column(name = "old_status")
+    @Enumerated(EnumType.STRING)
+    Status oldStatus;
 
     @Column(name = "refund_type")
     @Enumerated(EnumType.STRING)
