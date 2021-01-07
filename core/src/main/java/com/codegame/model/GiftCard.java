@@ -49,6 +49,7 @@ public class GiftCard {
     @Enumerated(EnumType.STRING)
     Status oldStatus;
 
+    @JsonIgnore
     @Column(name = "refund_type")
     @Enumerated(EnumType.STRING)
     RefundType refundType;

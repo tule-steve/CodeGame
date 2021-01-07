@@ -53,7 +53,8 @@ public class Item {
     @Column(name = "price")
     int price = 0;
 
-    @Column(name = "created_at")
+
+    @Column(name = "created_at", updatable = false)
     @CreationTimestamp
     protected LocalDateTime createdAt;
 
