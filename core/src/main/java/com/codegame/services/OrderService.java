@@ -36,6 +36,10 @@ public class OrderService {
         return orderRepo.findAll();
     }
 
+    public List<GiftCard> getOrderDetail(Long orderId){
+        return giftCodeRepo.findAllByOrder_Id(orderId);
+    }
+
     public void createOrder(CreateOrderRequest request) {
         Order newOrder = new Order();
         newOrder.setOrderId(request.getOrderId());

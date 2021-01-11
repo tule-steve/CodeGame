@@ -20,7 +20,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class OTPService {
+public class EmailService {
     @Autowired
     private OTPTemplate template;
 
@@ -31,7 +31,7 @@ public class OTPService {
 
     private LoadingCache<String, Integer> otpCache;
 
-    public OTPService() {
+    public EmailService() {
         super();
         otpCache = CacheBuilder.newBuilder().
                 expireAfterWrite(EXPIRE_MINS, TimeUnit.MINUTES)

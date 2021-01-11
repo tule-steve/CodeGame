@@ -96,8 +96,7 @@ public class AdminService {
     }
 
     public void deleteGiftCard(List<String> codeList) {
-        List<GiftCard> deletedCodes = giftRepo.getCode(codeList,
-                                                       GiftCard.Status.REFUNDING);
+        List<GiftCard> deletedCodes = giftRepo.getCode(codeList);
         int count = codeList.size();
         int existingCodeCount = deletedCodes.size();
 
