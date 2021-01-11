@@ -4,7 +4,7 @@ import com.codegame.exception.GlobalValidationException;
 import com.codegame.security.DTOs.LoginResponse;
 import com.codegame.security.config.CustomOAuth2RequestFactory;
 import com.codegame.security.config.TwoFactorAuthenticationFilter;
-import com.codegame.security.services.EmailService;
+import com.codegame.security.services.OTPService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class TwoFactorAuthenticationController {
     public static final String PATH = "/secure/two_factor_authentication";
 
 
-    final private EmailService otpSvc;
+    final private OTPService otpSvc;
 
 
     @RequestMapping(path="/{email}", method = RequestMethod.GET)
