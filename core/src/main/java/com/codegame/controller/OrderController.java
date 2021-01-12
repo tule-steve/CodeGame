@@ -43,7 +43,7 @@ public class OrderController {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<GiftCard> result = orderSvc.getOrderDetail(orderId);
         if (user == null ||
-            !user.getAuthorities().stream().noneMatch(r -> "ROLE_ADMIN".equalsIgnoreCase(r.getAuthority()))) {
+            user.getAuthorities().stream().noneMatch(r -> "ROLE_ADMIN".equalsIgnoreCase(r.getAuthority()))) {
             result.forEach(r -> r.setGiftCode(r.getMaskCode()));
         }
         return result;
