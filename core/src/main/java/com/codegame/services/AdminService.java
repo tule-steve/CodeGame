@@ -125,4 +125,12 @@ public class AdminService {
         newData.setId(0L);
         em.merge(newData);
     }
+
+    public Object getSetting(){
+        List<Setting> settings = giftRepo.getSetting();
+        if(settings.isEmpty()){
+            throw new GlobalValidationException("no setting is set up");
+        }
+        return settings.get(0);
+    }
 }

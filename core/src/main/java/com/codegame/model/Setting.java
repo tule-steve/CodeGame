@@ -1,5 +1,6 @@
 package com.codegame.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -18,6 +19,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 public class Setting {
 
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id")
     Long id;

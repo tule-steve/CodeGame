@@ -67,5 +67,10 @@ public class AdminController {
         return ResponseEntity.ok(CommonResponse.buildOkData("updated setting"));
     }
 
+    @GetMapping(value = "/setting")
+    public Object getSetting() {
+        return adminSvc.getSetting();
+    }
+
 
 }

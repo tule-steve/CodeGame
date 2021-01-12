@@ -2,6 +2,7 @@ package com.codegame.repositories;
 
 import com.codegame.dto.OrderEmailDto;
 import com.codegame.model.GiftCard;
+import com.codegame.model.Setting;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -35,5 +36,9 @@ public interface GiftCodeRepository extends JpaRepository<GiftCard, Long> {
 
     @Query(nativeQuery = true)
     List<OrderEmailDto> getOrderEmailDetail(Long orderId);
+
+
+    @Query("select a from Setting a")
+    List<Setting> getSetting();
 
 }
