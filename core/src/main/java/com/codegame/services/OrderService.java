@@ -37,7 +37,12 @@ public class OrderService {
     }
 
     public List<GiftCard> getOrderDetail(Long orderId){
-        return giftCodeRepo.findAllByOrder_Id(orderId);
+        Order order = orderRepo.findByOrderId(orderId);
+        if(order == null){
+            throw new GlobalValidationException("Cannot find the order");
+        }
+
+        return giftCodeRepo.findAllByOrder_Id(order.getId());
     }
 
     public void createOrder(CreateOrderRequest request) {

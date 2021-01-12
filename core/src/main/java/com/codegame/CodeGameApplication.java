@@ -1,12 +1,16 @@
 package com.codegame;
 
+import com.codegame.dto.OrderTemplate;
+import com.codegame.security.config.OTPTemplate;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
+@EnableScheduling
 public class CodeGameApplication {
 
     public static void main(String[] args) {
@@ -22,5 +26,10 @@ public class CodeGameApplication {
                 registry.addMapping("/**");
             }
         };
+    }
+
+    @Bean
+    public OrderTemplate getOrderTempate() throws Exception{
+        return new OrderTemplate();
     }
 }

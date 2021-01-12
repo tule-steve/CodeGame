@@ -1,5 +1,6 @@
 package com.codegame.repositories;
 
+import com.codegame.dto.OrderEmailDto;
 import com.codegame.model.GiftCard;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -30,5 +31,9 @@ public interface GiftCodeRepository extends JpaRepository<GiftCard, Long> {
 
     @Query("select max(a.autoApprove) from Setting a")
     Boolean isAutoApprove();
+
+
+    @Query(nativeQuery = true)
+    List<OrderEmailDto> getOrderEmailDetail(Long orderId);
 
 }

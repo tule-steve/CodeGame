@@ -1,6 +1,7 @@
 package com.codegame.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -35,16 +36,21 @@ public class Order {
     @Column(name = "order_detail")
     String orderDetail;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Column(name = "refund_status")
     @Enumerated(EnumType.STRING)
     GiftCard.Status status;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Column(name = "refund_date")
     protected LocalDateTime refundDate;
 
     @Column(name = "created_at")
     @CreationTimestamp
     protected LocalDateTime createdAt;
+
+    @Column(name = "is_send_email")
+    protected Boolean isSendEmail;
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = {CascadeType.PERSIST})
