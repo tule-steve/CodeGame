@@ -6,9 +6,11 @@ import com.codegame.dto.RefundRequest;
 import com.codegame.exception.GlobalValidationException;
 import com.codegame.model.GiftCard;
 import com.codegame.model.Item;
+import com.codegame.model.Order;
 import com.codegame.model.Setting;
 import com.codegame.repositories.GiftCodeRepository;
 import com.codegame.repositories.ItemRepository;
+import com.codegame.repositories.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +29,17 @@ public class AdminService {
 
     final ItemRepository itemRepo;
 
+    final OrderRepository orderRepo;
+
     final EntityManager em;
 
     public void refund(RefundRequest request) {
+
+        Order refundOrder = orderRepo.findByOrderId(request.getOrderId());
+        if(refundOrder == null){
+            throw new GlobalValidationException("Cannot find the order");
+        }
+
         List<GiftCard> refundCodes = giftRepo.getRefundCodes(request.getCodes()
                                                                     .stream()
                                                                     .map(r -> r.getCode())

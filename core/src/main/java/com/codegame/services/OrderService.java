@@ -79,8 +79,7 @@ public class OrderService {
                                                                         .map(RefundLineItemDto::getCode)
                                                                         .collect(
                                                                                 Collectors.toList()),
-                                                                 refundOrder.getId(),
-                                                                 GiftCard.Status.USED);
+                                                                 refundOrder.getId());
 
         int refundCodeCount = request.getCodes().size();
         int existingCodeCount = refundCodes.size();
