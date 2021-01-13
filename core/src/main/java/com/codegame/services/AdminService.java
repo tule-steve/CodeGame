@@ -44,7 +44,7 @@ public class AdminService {
                                                                     .stream()
                                                                     .map(r -> r.getCode())
                                                                     .collect(Collectors.toList()),
-                                                             request.getOrderId());
+                                                             refundOrder.getId());
         int refundCodeCount = request.getCodes().size();
         int existingCodeCount = refundCodes.size();
 
