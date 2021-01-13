@@ -12,8 +12,8 @@ import java.util.List;
 @Repository
 public interface GiftCodeRepository extends JpaRepository<GiftCard, Long> {
 
-    @Query("select distinct a from GiftCard a where a.giftCode in :codes and a.order.id = :orderId and a.status = :status order by a.giftCode")
-    List<GiftCard> getRefundCodes(List<String> codes, Long orderId, GiftCard.Status status);
+    @Query("select distinct a from GiftCard a where a.giftCode in :codes and a.order.id = :orderId order by a.giftCode")
+    List<GiftCard> getRefundCodes(List<String> codes, Long orderId);
 
     List<GiftCard> findAllByOrder_Id(Long orderId);
 

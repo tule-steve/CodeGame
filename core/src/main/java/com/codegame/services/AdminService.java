@@ -34,8 +34,7 @@ public class AdminService {
                                                                     .stream()
                                                                     .map(r -> r.getCode())
                                                                     .collect(Collectors.toList()),
-                                                             request.getOrderId(),
-                                                             GiftCard.Status.REFUNDING);
+                                                             request.getOrderId());
         int refundCodeCount = request.getCodes().size();
         int existingCodeCount = refundCodes.size();
 
