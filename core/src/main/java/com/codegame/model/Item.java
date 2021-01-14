@@ -33,6 +33,7 @@ import static javax.persistence.GenerationType.SEQUENCE;
         "select itm.id as itemId, itm.description as description, count(gc.id) as count, itm.price as price, itm.created_at as createdAt " +
         " from tu_test_itm itm " +
         " left outer join tu_test_gc gc on itm.id = gc.item_id " +
+        " where (?1 is null or ?1 < itm.created_at) and (?2 is null or ?2 > itm.created_at)" +
         "group by itm.id",
         resultSetMapping = "itemDetailsMapping")
 @Entity

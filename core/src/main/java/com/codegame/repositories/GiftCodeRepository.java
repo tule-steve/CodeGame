@@ -4,13 +4,14 @@ import com.codegame.dto.OrderEmailDto;
 import com.codegame.model.GiftCard;
 import com.codegame.model.Setting;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface GiftCodeRepository extends JpaRepository<GiftCard, Long> {
+public interface GiftCodeRepository extends JpaRepository<GiftCard, Long>, JpaSpecificationExecutor<GiftCard> {
 
     @Query("select distinct a from GiftCard a where a.giftCode in :codes and a.order.id = :orderId order by a.giftCode")
     List<GiftCard> getRefundCodes(List<String> codes, Long orderId);

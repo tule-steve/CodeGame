@@ -11,6 +11,8 @@ import com.codegame.model.Order;
 import com.codegame.repositories.GiftCodeRepository;
 import com.codegame.repositories.ItemRepository;
 import com.codegame.repositories.OrderRepository;
+import com.codegame.specifications.GiftCardFilter;
+import com.codegame.specifications.OrderFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,17 +34,17 @@ public class OrderService {
     final OrderRepository orderRepo;
 
 
-    public List<Order> getOrderList(){
-        return orderRepo.findAll();
+    public List<Order> getOrderList(OrderFilter filter){
+        return orderRepo.findAll(filter);
     }
 
-    public List<GiftCard> getOrderDetail(Long orderId){
+    public List<GiftCard> getOrderDetail(Long orderId, GiftCardFilter filter){
         Order order = orderRepo.findByOrderId(orderId);
         if(order == null){
             throw new GlobalValidationException("Cannot find the order");
         }
-
-        return giftCodeRepo.findAllByOrder_Id(order.getId());
+        filter.setOrderId(order.getId());
+        return giftCodeRepo.findAll(filter);
     }
 
     public void createOrder(CreateOrderRequest request) {

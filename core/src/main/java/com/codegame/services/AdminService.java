@@ -11,11 +11,17 @@ import com.codegame.model.Setting;
 import com.codegame.repositories.GiftCodeRepository;
 import com.codegame.repositories.ItemRepository;
 import com.codegame.repositories.OrderRepository;
+import com.codegame.specifications.GiftCardFilter;
+import com.codegame.specifications.ItemFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,9 +79,10 @@ public class AdminService {
         giftRepo.saveAll(refundCodes);
     }
 
-    public List<GiftCard> getCodeByItem(Long itemId) {
+    public List<GiftCard> getCodeByItem(Long itemId, GiftCardFilter filter) {
         Item item = itemRepo.findById(itemId).orElseThrow(() -> new GlobalValidationException("Item not exist"));
-        return giftRepo.getCodeByItemId(item.getId());
+        filter.setItemId(item.getId());
+        return giftRepo.findAll(filter);
     }
 
     public void createItem(List<Item> data) {
@@ -99,9 +106,10 @@ public class AdminService {
         giftRepo.saveAll(newGiftCardList);
     }
 
-    public List<ItemDto> getItemDetails() {
-
-        return itemRepo.getItemDetails();
+    public List<ItemDto> getItemDetails(LocalDate from, LocalDate to) {
+        LocalDateTime fromLDT = from != null ? from.atStartOfDay() : null;
+        LocalDateTime toLDT = to != null ? to.atTime(LocalTime.MAX) : null;
+        return itemRepo.getItemDetails(fromLDT, toLDT);
     }
 
     public void deleteGiftCard(List<String> codeList) {

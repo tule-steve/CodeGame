@@ -6,11 +6,15 @@ import com.codegame.dto.RefundRequest;
 import com.codegame.model.Item;
 import com.codegame.model.Setting;
 import com.codegame.services.AdminService;
+import com.codegame.specifications.GiftCardFilter;
+import com.codegame.specifications.ItemFilter;
 import com.common.dtos.CommonResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -27,8 +31,8 @@ public class AdminController {
     }
 
     @GetMapping(value = "/item/{itemId}")
-    public Object getCodes(@PathVariable Long itemId) {
-        return adminSvc.getCodeByItem(itemId);
+    public Object getCodes(@PathVariable Long itemId, GiftCardFilter filter) {
+        return adminSvc.getCodeByItem(itemId, filter);
     }
 
     @PostMapping(value = "/item/create")
@@ -49,7 +53,6 @@ public class AdminController {
         return ResponseEntity.ok(CommonResponse.buildOkData("added " + request.getCodes().size() + " gift card"));
     }
 
-
     @PostMapping(value = "/giftcard/delete")
     public ResponseEntity deleteGiftCard(@RequestBody List<String> codeList) {
         adminSvc.deleteGiftCard(codeList);
@@ -57,8 +60,9 @@ public class AdminController {
     }
 
     @GetMapping(value = "/items")
-    public List<ItemDto> getCodes() {
-        return adminSvc.getItemDetails();
+    public List<ItemDto> getItem(@RequestParam(value = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+                                 @RequestParam(value = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        return adminSvc.getItemDetails(from, to);
     }
 
     @PostMapping(value = "/setting")
@@ -71,6 +75,5 @@ public class AdminController {
     public Object getSetting() {
         return adminSvc.getSetting();
     }
-
 
 }
