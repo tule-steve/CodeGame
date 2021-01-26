@@ -18,8 +18,8 @@ public class OAuth2ResourceServer extends ResourceServerConfigurerAdapter {
 //            .anonymous().disable()
             //            .requestMatchers().antMatchers("/api/**", "**/secure/**").and()
             .authorizeRequests()
-            .antMatchers("/secure/two_factor_authentication/**").permitAll()
-            .antMatchers("/api/**").access("hasAnyRole('ADMIN','USER')")
+            .antMatchers("/secure/two_factor_authentication/**", "/api/**").permitAll()
+//            .antMatchers("/api/**").access("hasAnyRole('ADMIN','USER')")
             .anyRequest().authenticated()
             .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
