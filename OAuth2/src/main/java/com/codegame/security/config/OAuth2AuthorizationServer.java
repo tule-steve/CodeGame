@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.Collections;
@@ -57,7 +58,8 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
         endpoints.getFrameworkEndpointHandlerMapping().setCorsConfigurations(corsConfigMap);
         endpoints.authenticationManager(authenticationManager)
                  //2fa
-                 .requestFactory(customOAuth2RequestFactory());
+                 .requestFactory(customOAuth2RequestFactory())
+                 .tokenEnhancer(tokenEnhancer());
     }
 
     @Bean
@@ -95,5 +97,10 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
                 .redirectUris("/login")
                 .accessTokenValiditySeconds(3000)
                 .refreshTokenValiditySeconds(3000);
+    }
+
+    @Bean
+    public TokenEnhancer tokenEnhancer() {
+        return new CustomTokenEnhancer();
     }
 }
