@@ -2,8 +2,8 @@ package com.codegame.security.config;
 
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Map;
 
@@ -17,14 +17,21 @@ public class OTPTemplate {
     private String loadTemplate(String customtemplate) throws Exception {
 
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource(customtemplate).getFile());
-        String content = "Empty";
-        try {
-            content = new String(Files.readAllBytes(file.toPath()));
+        StringBuilder sb = new StringBuilder();
+        try (InputStream inputStream = classLoader.getResourceAsStream(customtemplate);
+             InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+             BufferedReader reader = new BufferedReader(streamReader)) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+
         } catch (IOException e) {
             throw new Exception("Could not read template  = " + customtemplate);
         }
-        return content;
+
+        return sb.toString();
     }
 
     public String getTemplate(Map<String, String> replacements) {

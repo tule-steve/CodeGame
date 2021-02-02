@@ -17,11 +17,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http.authorizeRequests()
-//            .antMatchers("/", "/secure/two_factor_authentication").permitAll()
-//            .antMatchers("/oauth/token").permitAll()
-//            .anyRequest().authenticated()
-//            .and().httpBasic();
+        //        http.authorizeRequests()
+        //            .antMatchers("/", "/secure/two_factor_authentication").permitAll()
+        //            .antMatchers("/oauth/token").permitAll()
+        //            .anyRequest().authenticated()
+        //            .and().httpBasic();
         http.cors().and().csrf().disable();
         //2fa
         //
@@ -38,9 +38,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .inMemoryAuthentication()
+                .withUser("stephenle14121@gmail.com")
+                .password(passwordEncoder().encode("123456"))
+                .roles("ADMIN")
+
+                .and()
                 .withUser("stephenle1412@gmail.com")
                 .password(passwordEncoder().encode("123456"))
-                .roles("ADMIN");
+                .roles("SUPPORT")
+
+                .and()
+                .withUser("vdanh1996@gmail.com")
+                .password(passwordEncoder().encode("123456"))
+                .roles("ADMIN")
+
+                .and()
+                .withUser("danhvv196@gmail.com")
+                .password(passwordEncoder().encode("1234567"))
+                .roles("SUPPORT")
+        ;
     }
 
     @Bean
@@ -67,7 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public OTPTemplate getOTPTemplate() throws Exception{
+    public OTPTemplate getOTPTemplate() throws Exception {
         return new OTPTemplate();
     }
 
