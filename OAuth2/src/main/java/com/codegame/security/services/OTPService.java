@@ -54,6 +54,7 @@ public class OTPService {
 
         String message = template.getTemplate(replacements);
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+        helper.setFrom("tule.java@gmail.com");
         helper.setTo(email);
         helper.setSubject("OTP - Login");
         helper.setText(message, true);

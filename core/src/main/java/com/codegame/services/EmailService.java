@@ -37,6 +37,7 @@ public class EmailService {
 
         String message = template.buildNewLineForOrder(order, detail);
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+        helper.setFrom("tule.java@gmail.com");
         helper.setTo(order.getEmail());
         helper.setSubject("Order: " + order.getId());
         helper.setText(message, true);

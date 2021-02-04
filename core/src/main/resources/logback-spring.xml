@@ -32,7 +32,7 @@
     <logger name="org.hibernate.type.descriptor.sql" level="TRACE" />
     <logger name="org.hibernate" level="debug"/>
 
-    <root level="info">
+    <root level="debug">
         <springProfile name="dev">
             <appender-ref ref="STDOUT" />
         </springProfile>
