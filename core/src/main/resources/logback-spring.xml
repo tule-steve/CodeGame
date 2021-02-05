@@ -29,10 +29,10 @@
     <!-- https://hibernate.atlassian.net/browse/HV-1323 -->
     <logger name="org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator" level="ERROR"/>
     <logger name="org.hibernate.validator" level="ERROR"/>
-    <logger name="org.hibernate.type.descriptor.sql" level="TRACE" />
-    <logger name="org.hibernate" level="debug"/>
+    <!--<logger name="org.hibernate.type.descriptor.sql" level="TRACE" />
+    <logger name="org.hibernate" level="debug"/>-->
 
-    <root level="debug">
+    <root level="info">
         <springProfile name="dev">
             <appender-ref ref="STDOUT" />
         </springProfile>
