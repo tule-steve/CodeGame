@@ -45,7 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .withUser("stephenle1412@gmail.com")
                 .password(passwordEncoder().encode("123456"))
-                .roles("SUPPORT")
+                .roles("ADMIN")
 
                 .and()
                 .withUser("vdanh1996@gmail.com")
@@ -56,6 +56,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .withUser("danhvv196@gmail.com")
                 .password(passwordEncoder().encode("1234567"))
                 .roles("SUPPORT")
+
+                .and()
+                .withUser("gianghnd.it@gmail.com")
+                .password(passwordEncoder().encode("123456"))
+                .roles("ADMIN")
         ;
     }
 
