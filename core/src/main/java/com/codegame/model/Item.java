@@ -39,6 +39,7 @@ import static javax.persistence.GenerationType.SEQUENCE;
 @Entity
 @Data
 @Table(name = "tu_test_itm")
+@Table(name = "item")
 public class Item {
 
     @Id
@@ -48,7 +49,7 @@ public class Item {
 
     @NotBlank(message = "description id is required.")
     @Column(name = "description")
-    String description;
+    String name;
 
     @Min(1)
     @Column(name = "price")

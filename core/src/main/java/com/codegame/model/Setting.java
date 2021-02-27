@@ -15,7 +15,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Data
-@Table(name = "tu_test_setting")
+@Table(name = "setting")
 public class Setting {
 
     @Id

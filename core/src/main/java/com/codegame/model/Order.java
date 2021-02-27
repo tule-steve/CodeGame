@@ -14,7 +14,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Data
-@Table(name = "tu_test_order")
+@Table(name = "orders")
 public class Order {
 
     @JsonIgnore

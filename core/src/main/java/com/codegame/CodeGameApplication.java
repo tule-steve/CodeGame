@@ -5,9 +5,11 @@ import com.codegame.dto.OrderTemplate;
 import com.codegame.security.config.OTPTemplate;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -41,20 +43,20 @@ public class CodeGameApplication {
         };
     }
 
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(Arrays.asList("*"));
-//        configuration.setAllowedMethods(Arrays.asList("*"));
-//        configuration.setAllowedHeaders(Arrays.asList("*"));
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
+    //    @Bean
+    //    public CorsConfigurationSource corsConfigurationSource() {
+    //        CorsConfiguration configuration = new CorsConfiguration();
+    //        configuration.setAllowedOrigins(Arrays.asList("*"));
+    //        configuration.setAllowedMethods(Arrays.asList("*"));
+    //        configuration.setAllowedHeaders(Arrays.asList("*"));
+    //
+    //        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    //        source.registerCorsConfiguration("/**", configuration);
+    //        return source;
+    //    }
 
     @Bean
-    public OrderTemplate getOrderTempate() throws Exception{
+    public OrderTemplate getOrderTempate() throws Exception {
         return new OrderTemplate();
     }
 
@@ -65,5 +67,10 @@ public class CodeGameApplication {
         return registrationBean;
     }
 
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.basicAuthentication("ck_d7aff76724444212194ad9326097da4cdc874d8c",
+                                           "cs_4a6d60dc9256359ae93ee5c8eaf2c55f94264075").build();
+    }
 
 }

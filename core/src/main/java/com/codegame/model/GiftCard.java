@@ -33,14 +33,14 @@ import static javax.persistence.GenerationType.IDENTITY;
 )
 @NamedNativeQuery(name = "GiftCard.getOrderEmailDetail", query =
         "select itm.id as itemId, itm.description as description, GROUP_CONCAT(gc.gift_code) as codes, count(gc.id) as count, itm.price as price " +
-        " from tu_test_itm itm " +
-        " inner join tu_test_gc gc on itm.id = gc.item_id " +
+        " from item itm " +
+        " inner join gift_card gc on itm.id = gc.item_id " +
         " where gc.order_id = :orderId "+
         " group by itm.id",
         resultSetMapping = "OrderEmailDataMapping")
 @Entity
 @Data
-@Table(name = "tu_test_gc")
+@Table(name = "gift_card")
 public class GiftCard {
 
     public enum Status {
