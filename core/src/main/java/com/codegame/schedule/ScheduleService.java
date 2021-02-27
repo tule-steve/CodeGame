@@ -6,6 +6,7 @@ import com.codegame.model.Item;
 import com.codegame.model.Order;
 import com.codegame.repositories.GiftCodeRepository;
 import com.codegame.repositories.OrderRepository;
+import com.codegame.services.AdminService;
 import com.codegame.services.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -19,6 +20,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -35,6 +37,8 @@ public class ScheduleService {
 
     private final RestTemplate restTemplate;
 
+    final AdminService adminSvc;
+
 //    @Scheduled(fixedRate = 1000)
     public void sendOrderEmail() {
         List<Order> unsentOrder = orderRepo.findAllByIsSendEmailFalse();
@@ -50,7 +54,7 @@ public class ScheduleService {
         }
     }
 
-//    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 360000)
     public void updateItemData() {
 //        HttpHeaders headers = new HttpHeaders();
 //        String auth = "ck_d7aff76724444212194ad9326097da4cdc874d8c" + ":" + "cs_4a6d60dc9256359ae93ee5c8eaf2c55f94264075";
@@ -61,8 +65,7 @@ public class ScheduleService {
         try {
             Item[] itemData = restTemplate.getForEntity("https://keysgame.vn/wp-json/wc/v3/products",
                                          Item[].class).getBody();
-            int a = 0;
-            int b = 0;
+            adminSvc.createItem(Arrays.asList(itemData));
         } catch (HttpStatusCodeException e) {
             ResponseEntity.status(e.getRawStatusCode())
                                  .headers(e.getResponseHeaders())

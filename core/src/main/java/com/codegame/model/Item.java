@@ -1,6 +1,8 @@
 package com.codegame.model;
 
 import com.codegame.dto.ItemDto;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -30,20 +32,20 @@ import static javax.persistence.GenerationType.SEQUENCE;
         }
 )
 @NamedNativeQuery(name = "Item.getItemDetails", query =
-        "select itm.id as itemId, itm.description as description, count(gc.id) as count, itm.price as price, itm.created_at as createdAt " +
-        " from tu_test_itm itm " +
-        " left outer join tu_test_gc gc on itm.id = gc.item_id " +
-        " where (?1 is null or ?1 < itm.created_at) and (?2 is null or ?2 > itm.created_at)" +
+        "select itm.id as itemId, itm.description as description, count(gc.id) as count, itm.price as price, itm.date_created as createdAt " +
+        " from item itm " +
+        " left outer join gift_card gc on itm.id = gc.item_id " +
+        " where (?1 is null or ?1 < itm.date_created) and (?2 is null or ?2 > itm.date_created)" +
         "group by itm.id",
         resultSetMapping = "itemDetailsMapping")
 @Entity
 @Data
-@Table(name = "tu_test_itm")
 @Table(name = "item")
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Item {
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
+//    @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id")
     Long id;
 
@@ -56,9 +58,9 @@ public class Item {
     int price = 0;
 
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "date_created", updatable = false)
     @CreationTimestamp
-    protected LocalDateTime createdAt;
+    protected LocalDateTime dateCreated;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
     List<GiftCard> codes = new ArrayList<>();
