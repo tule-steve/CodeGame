@@ -139,7 +139,7 @@ public class AdminService {
     
 
     public void updateSetting(Setting newData){
-        newData.setId(0L);
+        newData.setId(1L);
         em.merge(newData);
     }
 

@@ -50,7 +50,7 @@ public class Order {
     protected LocalDateTime createdAt;
 
     @Column(name = "is_send_email")
-    protected Boolean isSendEmail;
+    protected Boolean isSendEmail = false;
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = {CascadeType.PERSIST})

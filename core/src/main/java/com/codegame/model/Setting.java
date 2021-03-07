@@ -20,7 +20,6 @@ public class Setting {
 
     @Id
     @JsonIgnore
-    @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id")
     Long id;
 

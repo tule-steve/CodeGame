@@ -48,6 +48,9 @@ public class OrderService {
     }
 
     public void createOrder(CreateOrderRequest request) {
+        if(orderRepo.findByOrderId(request.getOrderId()) != null){
+            throw new GlobalValidationException("order " + request.getOrderId() + " is created before");
+        }
         Order newOrder = new Order();
         newOrder.setOrderId(request.getOrderId());
         newOrder.setEmail(request.getEmail());

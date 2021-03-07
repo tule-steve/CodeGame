@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
@@ -39,37 +40,38 @@ public class ScheduleService {
 
     final AdminService adminSvc;
 
-//    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 1000)
     public void sendOrderEmail() {
         List<Order> unsentOrder = orderRepo.findAllByIsSendEmailFalse();
-
-        try {
-            for (Order order : unsentOrder) {
-                order = unsentOrder.get(0);
+        for (Order order : unsentOrder) {
+            try {
                 List<OrderEmailDto> detail = gcRepo.getOrderEmailDetail(order.getId());
                 emailSvc.sendEmail(order, detail);
+                order.setIsSendEmail(false);
+                orderRepo.save(order);
+            } catch (Exception ex) {
+                logger.error("error", ex);
             }
-        } catch (Exception ex) {
-            logger.error("error", ex);
         }
+
     }
 
     @Scheduled(fixedRate = 360000)
     public void updateItemData() {
-//        HttpHeaders headers = new HttpHeaders();
-//        String auth = "ck_d7aff76724444212194ad9326097da4cdc874d8c" + ":" + "cs_4a6d60dc9256359ae93ee5c8eaf2c55f94264075";
-//        byte[] encodedAuth = Base64.encodeBase64(
-//                auth.getBytes(Charset.forName("US-ASCII")) );
-//        String authHeader = "Basic " + new String( encodedAuth );
-//        headers.set( "Authorization", authHeader );
+        //        HttpHeaders headers = new HttpHeaders();
+        //        String auth = "ck_d7aff76724444212194ad9326097da4cdc874d8c" + ":" + "cs_4a6d60dc9256359ae93ee5c8eaf2c55f94264075";
+        //        byte[] encodedAuth = Base64.encodeBase64(
+        //                auth.getBytes(Charset.forName("US-ASCII")) );
+        //        String authHeader = "Basic " + new String( encodedAuth );
+        //        headers.set( "Authorization", authHeader );
         try {
             Item[] itemData = restTemplate.getForEntity("https://keysgame.vn/wp-json/wc/v3/products",
-                                         Item[].class).getBody();
+                                                        Item[].class).getBody();
             adminSvc.createItem(Arrays.asList(itemData));
         } catch (HttpStatusCodeException e) {
             ResponseEntity.status(e.getRawStatusCode())
-                                 .headers(e.getResponseHeaders())
-                                 .body(e.getResponseBodyAsString());
+                          .headers(e.getResponseHeaders())
+                          .body(e.getResponseBodyAsString());
         }
     }
 }

@@ -11,6 +11,7 @@ import com.codegame.specifications.ItemFilter;
 import com.common.dtos.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,7 +48,7 @@ public class AdminController {
         return ResponseEntity.ok(CommonResponse.buildOkData("updated " + request.size() + " items"));
     }
 
-    @PostMapping(value = "/giftcard/create")
+    @PostMapping(value = "/giftcard/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity AddGiftCard(@RequestBody AddGiftCardRequest request) {
         adminSvc.addGiftCard(request);
         return ResponseEntity.ok(CommonResponse.buildOkData("added " + request.getCodes().size() + " gift card"));

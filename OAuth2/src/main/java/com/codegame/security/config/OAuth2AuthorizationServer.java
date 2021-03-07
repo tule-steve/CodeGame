@@ -50,7 +50,7 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.applyPermitDefaultValues();
-//        config.setAllowedOrigins(Arrays.asList("*", "http://45.251.112.123"));
+        //        config.setAllowedOrigins(Arrays.asList("*", "http://45.251.112.123"));
         config.setAllowCredentials(true);
 
         // Maybe there's a way to use config from AuthorizationServerEndpointsConfigurer endpoints?
@@ -110,7 +110,20 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
                 .resourceIds("oauth2-resource")
                 .redirectUris("/login")
                 .accessTokenValiditySeconds(3000)
-                .refreshTokenValiditySeconds(3000);
+                .refreshTokenValiditySeconds(3000)
+
+                .and()
+                .withClient("orderapp")
+                .secret(passwordEncoder.encode("123456"))
+                .authorizedGrantTypes("password")
+//                .authorities(TwoFactorAuthenticationFilter.ROLE_TWO_FACTOR_AUTHENTICATION_ENABLED)
+                .scopes("order_info")
+                .resourceIds("oauth2-resource")
+                .redirectUris("/login")
+                .accessTokenValiditySeconds(3000)
+                .refreshTokenValiditySeconds(3000)
+        ;
+
     }
 
     @Bean
