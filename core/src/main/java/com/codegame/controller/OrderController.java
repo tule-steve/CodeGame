@@ -2,7 +2,10 @@ package com.codegame.controller;
 
 import com.codegame.dto.CreateOrderRequest;
 import com.codegame.dto.RefundRequest;
+import com.codegame.exception.GlobalValidationException;
 import com.codegame.model.GiftCard;
+import com.codegame.model.Item;
+import com.codegame.repositories.GiftCodeRepository;
 import com.codegame.services.OrderService;
 import com.codegame.specifications.GiftCardFilter;
 import com.codegame.specifications.OrderFilter;
@@ -15,7 +18,9 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/order")
@@ -23,6 +28,8 @@ import java.util.List;
 public class OrderController {
 
     final OrderService orderSvc;
+
+    final GiftCodeRepository giftRepo;
 
     @GetMapping(value = "/list")
     public Object list(OrderFilter filter) {
@@ -51,4 +58,13 @@ public class OrderController {
         }
         return result;
     }
+
+    @GetMapping(value = "/check-item/{itemId}")
+    public Object getGiftCount(@PathVariable Long itemId) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("item", itemId);
+        response.put("amount", giftRepo.countAvailable(itemId));
+        return ResponseEntity.ok(response);
+    }
+
 }

@@ -16,8 +16,6 @@ public interface GiftCodeRepository extends JpaRepository<GiftCard, Long>, JpaSp
     @Query("select distinct a from GiftCard a where a.giftCode in :codes and a.order.id = :orderId order by a.giftCode")
     List<GiftCard> getRefundCodes(List<String> codes, Long orderId);
 
-    List<GiftCard> findAllByOrder_Id(Long orderId);
-
 
     @Query("select distinct a from GiftCard a where a.giftCode in :codes order by a.giftCode")
     List<GiftCard> getCode(List<String> codes);
@@ -41,5 +39,8 @@ public interface GiftCodeRepository extends JpaRepository<GiftCard, Long>, JpaSp
 
     @Query("select a from Setting a")
     List<Setting> getSetting();
+
+    @Query("select count(a.id) from GiftCard a where a.item.id = :itemId")
+    Integer countAvailable(Long itemId);
 
 }

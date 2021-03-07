@@ -40,14 +40,14 @@ public class ScheduleService {
 
     final AdminService adminSvc;
 
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 5000)
     public void sendOrderEmail() {
         List<Order> unsentOrder = orderRepo.findAllByIsSendEmailFalse();
         for (Order order : unsentOrder) {
             try {
                 List<OrderEmailDto> detail = gcRepo.getOrderEmailDetail(order.getId());
                 emailSvc.sendEmail(order, detail);
-                order.setIsSendEmail(false);
+                order.setIsSendEmail(true);
                 orderRepo.save(order);
             } catch (Exception ex) {
                 logger.error("error", ex);
