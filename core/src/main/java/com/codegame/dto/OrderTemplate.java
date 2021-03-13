@@ -75,7 +75,7 @@ public class OrderTemplate {
         sb.append(TD_END_TAG);
 
         sb.append(TD_START_TAG);
-        Arrays.stream(detail.getCodes().split(",")).forEach(r -> sb.append(r));
+        Arrays.stream(detail.getCodes().split(",")).forEach(r -> sb.append(r + "<br/>"));
         sb.append(TD_END_TAG);
     }
 }
