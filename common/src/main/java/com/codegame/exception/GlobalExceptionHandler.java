@@ -62,6 +62,7 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         for (ObjectError error : ex.getBindingResult().getAllErrors()) {
             details.add(error.getDefaultMessage());
         }
+        logger.error("error on parse argument", ex);
         return new ResponseEntity(details, HttpStatus.BAD_REQUEST);
     }
 

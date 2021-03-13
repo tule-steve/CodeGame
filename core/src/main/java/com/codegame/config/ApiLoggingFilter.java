@@ -56,7 +56,7 @@ public class ApiLoggingFilter implements Filter {
                 MDC.clear();
             }
         } catch (Throwable a) {
-            LOGGER.error(a.getMessage());
+            LOGGER.error("error on show request detail", a);
         }
     }
 

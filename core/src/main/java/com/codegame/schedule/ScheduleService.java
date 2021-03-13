@@ -83,7 +83,7 @@ public class ScheduleService {
         //        String authHeader = "Basic " + new String( encodedAuth );
         //        headers.set( "Authorization", authHeader );
         try {
-            Item[] itemData = {};
+            Item[] itemData;
             int i = 0;
             do {
                 i++;
@@ -113,7 +113,7 @@ public class ScheduleService {
         }
     }
 
-        @Scheduled(fixedRate = 300000)
+        @Scheduled(fixedRate = 14400000)
     public void notifyThresholdItem() throws MessagingException {
         Setting setting = adminSvc.getSetting();
         List<ItemDto> items = itemRepo.getThresholdItem(setting.getMinAmountAlert());
