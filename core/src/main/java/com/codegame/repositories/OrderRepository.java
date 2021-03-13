@@ -17,4 +17,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
 
     List<Order> findAllByIsSendEmailFalse();
 
+
+    List<Order> findAllByStatus(GiftCard.Status status);
+
 }

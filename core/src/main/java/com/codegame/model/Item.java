@@ -12,10 +12,12 @@ import javax.validation.constraints.NotBlank;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 import static javax.persistence.GenerationType.SEQUENCE;
+
 @SqlResultSetMapping(
         name = "itemDetailsMapping",
         classes = {
@@ -25,8 +27,8 @@ import static javax.persistence.GenerationType.SEQUENCE;
                                 @ColumnResult(name = "itemId"),
                                 @ColumnResult(name = "description"),
                                 @ColumnResult(name = "count"),
-                                @ColumnResult(name = "price"),
-                                @ColumnResult(name = "createdAt")
+                                @ColumnResult(name = "price", type = Integer.class),
+                                @ColumnResult(name = "createdAt", type = Date.class)
                         }
                 )
         }
@@ -38,6 +40,13 @@ import static javax.persistence.GenerationType.SEQUENCE;
         " where (?1 is null or ?1 < itm.date_created) and (?2 is null or ?2 > itm.date_created)" +
         "group by itm.id",
         resultSetMapping = "itemDetailsMapping")
+
+@NamedNativeQuery(name = "Item.getThresholdItem", query =
+        "select itm.id as itemId, itm.description as description, count(gc.id) as count, null as price, null as createdAt from item itm \n" +
+        " left join gift_card gc on itm.id = gc.item_id and gc.status = 'available' \n" +
+        " group by itm.id \n" +
+        " having count(gc.id)  < ?1",
+        resultSetMapping = "itemDetailsMapping")
 @Entity
 @Data
 @Table(name = "item")
@@ -45,7 +54,7 @@ import static javax.persistence.GenerationType.SEQUENCE;
 public class Item {
 
     @Id
-//    @GeneratedValue(strategy = IDENTITY)
+    //    @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id")
     Long id;
 
@@ -57,7 +66,6 @@ public class Item {
     @Column(name = "price")
     int price = 0;
 
-
     @Column(name = "date_created", updatable = false)
     @CreationTimestamp
     protected LocalDateTime dateCreated;
@@ -65,7 +73,7 @@ public class Item {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
     List<GiftCard> codes = new ArrayList<>();
 
-    public void addGiftCard(GiftCard gc){
+    public void addGiftCard(GiftCard gc) {
         codes.add(gc);
     }
 }

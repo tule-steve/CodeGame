@@ -36,12 +36,6 @@ public class OrderController {
         return orderSvc.getOrderList(filter);
     }
 
-    @PostMapping(value = "/create")
-    public Object createOrder(@Validated @RequestBody CreateOrderRequest request) {
-        orderSvc.createOrder(request);
-        return ResponseEntity.ok(CommonResponse.buildOkData("received the order request"));
-    }
-
     @PostMapping(value = "/refund")
     public Object refundOrder(@RequestBody RefundRequest request) {
         orderSvc.refundOrder(request);
@@ -57,6 +51,12 @@ public class OrderController {
             result.forEach(r -> r.setGiftCode(r.getMaskCode()));
         }
         return result;
+    }
+
+    @PostMapping(value = "/create")
+    public Object createOrder(@Validated @RequestBody CreateOrderRequest request) {
+        orderSvc.createOrder(request);
+        return ResponseEntity.ok(CommonResponse.buildOkData("received the order request"));
     }
 
     @GetMapping(value = "/check-item/{itemId}")

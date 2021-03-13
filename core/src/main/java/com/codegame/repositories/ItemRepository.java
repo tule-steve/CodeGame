@@ -18,4 +18,7 @@ public interface ItemRepository extends JpaRepository<Item, Long>, JpaSpecificat
 
     @Query(nativeQuery = true)
     List<ItemDto> getItemDetails(LocalDateTime from, LocalDateTime to);
+
+    @Query(nativeQuery = true)
+    List<ItemDto> getThresholdItem(Integer minAmount);
 }

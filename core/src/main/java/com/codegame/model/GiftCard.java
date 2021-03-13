@@ -22,7 +22,7 @@ import static javax.persistence.GenerationType.IDENTITY;
                 @ConstructorResult(
                         targetClass = OrderEmailDto.class,
                         columns = {
-                                @ColumnResult(name = "itemId"),
+                                @ColumnResult(name = "itemId", type = Long.class),
                                 @ColumnResult(name = "description"),
                                 @ColumnResult(name = "price"),
                                 @ColumnResult(name = "count"),
@@ -38,6 +38,15 @@ import static javax.persistence.GenerationType.IDENTITY;
         " where gc.order_id = :orderId "+
         " group by itm.id",
         resultSetMapping = "OrderEmailDataMapping")
+
+@NamedNativeQuery(name = "GiftCard.getRefundEmailDetail", query =
+        "select itm.id as itemId, itm.description as description, GROUP_CONCAT(gc.gift_code) as codes, count(gc.id) as count, itm.price as price " +
+        " from item itm " +
+        " inner join gift_card gc on itm.id = gc.item_id " +
+        " where gc.order_id = :orderId "+
+        " and gc.status = 'APPROVED_FOR_REFUND' " +
+        " group by itm.id",
+        resultSetMapping = "OrderEmailDataMapping")
 @Entity
 @Data
 @Table(name = "gift_card")
@@ -50,6 +59,7 @@ public class GiftCard {
         REFUNDING,
         APPROVED_FOR_REFUND,
         REFUNDED,
+        CREATED,
         DELETED;
     }
 

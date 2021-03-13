@@ -1,9 +1,6 @@
 package com.codegame.services;
 
-import com.codegame.dto.CreateOrderRequest;
-import com.codegame.dto.LineItemDto;
-import com.codegame.dto.RefundLineItemDto;
-import com.codegame.dto.RefundRequest;
+import com.codegame.dto.*;
 import com.codegame.exception.GlobalValidationException;
 import com.codegame.model.GiftCard;
 import com.codegame.model.Item;
@@ -15,10 +12,13 @@ import com.codegame.specifications.GiftCardFilter;
 import com.codegame.specifications.OrderFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +33,7 @@ public class OrderService {
 
     final OrderRepository orderRepo;
 
+    final private EmailService emailSvc;
 
     public List<Order> getOrderList(OrderFilter filter){
         return orderRepo.findAll(filter);
@@ -56,6 +57,7 @@ public class OrderService {
         newOrder.setEmail(request.getEmail());
         newOrder.setOrderDetail(request.toString());
         newOrder.setTransactionTotal(request.getTransactionTotal());
+        newOrder.setStatus(GiftCard.Status.CREATED);
 
         for (LineItemDto lineItm : request.getLineItems()) {
             Item currItm = itemRepo.findById(lineItm.getItemId())
@@ -114,5 +116,38 @@ public class OrderService {
         refundOrder.setStatus(GiftCard.Status.REFUNDING);
         orderRepo.save(refundOrder);
         giftCodeRepo.saveAll(refundCodes);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+    public void refundOrder(Order order) throws MessagingException {
+        List<String> refundedCodeList = new ArrayList<>();
+        List<OrderEmailDto> details = giftCodeRepo.getRefundEmailDetail(order.getId());
+
+        for (OrderEmailDto detail : details) {
+            Item currItm = itemRepo.findById(detail.getItemId())
+                                   .orElseThrow(() -> new GlobalValidationException(
+                                           "Cannot find item with id " + detail.getItemId()));
+
+            List<GiftCard> availGiftCard = giftCodeRepo.getCodeByItemId(currItm.getId(),
+                                                                        GiftCard.Status.AVAILABLE);
+            if (availGiftCard.size() < detail.getCount().intValue()) {
+                throw new GlobalValidationException("Not enough gift code for item with id " + detail.getItemId());
+            }
+            refundedCodeList.addAll(Arrays.asList(detail.getCodes().split(",")));
+            List<GiftCard> newGiftCodeList = availGiftCard.subList(0, detail.getCount().intValue());
+            newGiftCodeList.forEach(r -> {
+                r.setStatus(GiftCard.Status.USED);
+                r.setOrder(order);
+            });
+            giftCodeRepo.saveAll(newGiftCodeList);
+            StringBuilder sb = new StringBuilder();
+            newGiftCodeList.forEach(r -> sb.append(r.getGiftCode() + ", "));
+            detail.setCodes(sb.toString());
+        }
+        giftCodeRepo.updateRefundedCodes(GiftCard.Status.REFUNDED, refundedCodeList);
+        order.setStatus(GiftCard.Status.REFUNDED);
+        orderRepo.save(order);
+        emailSvc.sendEmail(order, details);
+
     }
 }

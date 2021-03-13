@@ -72,10 +72,15 @@ public class AdminService {
             request.getCodes().stream().forEach(data -> {
                 if(data.getCode().equals(r.getGiftCode())){
                     r.setRefundType(data.getRefundType());
+                    if(r.getRefundType().equals(GiftCard.RefundType.BY_MONEY)){
+                        r.setStatus(GiftCard.Status.REFUNDED);
+                    }
                 }
             });
 
         });
+        refundOrder.setStatus(GiftCard.Status.APPROVED_FOR_REFUND);
+        orderRepo.save(refundOrder);
         giftRepo.saveAll(refundCodes);
     }
 
@@ -143,7 +148,7 @@ public class AdminService {
         em.merge(newData);
     }
 
-    public Object getSetting(){
+    public Setting getSetting(){
         List<Setting> settings = giftRepo.getSetting();
         if(settings.isEmpty()){
             throw new GlobalValidationException("no setting is set up");

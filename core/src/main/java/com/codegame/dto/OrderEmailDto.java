@@ -1,6 +1,7 @@
 package com.codegame.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -8,17 +9,17 @@ import java.math.BigInteger;
 import java.util.Date;
 
 @Data
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class OrderEmailDto {
-    final Integer itemId;
+    Long itemId;
 
-    final String description;
+    String description;
 
-    final Integer price;
+    Integer price;
 
-    final BigInteger count;
+    BigInteger count;
 
-    final String codes;
+    String codes;
 
 
 }

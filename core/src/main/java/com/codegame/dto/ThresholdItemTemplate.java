@@ -3,18 +3,18 @@ package com.codegame.dto;
 import com.codegame.model.Order;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.List;
 
-public class OrderTemplate {
+public class ThresholdItemTemplate {
     private String template;
 
-    protected final Log logger = LogFactory.getLog(OrderTemplate.class);
+    protected final Log logger = LogFactory.getLog(ThresholdItemTemplate.class);
 
     final private static String TR_START_TAG = "<tr>";
 
@@ -24,8 +24,8 @@ public class OrderTemplate {
 
     final private static String TD_END_TAG = "</td>\n";
 
-    public OrderTemplate() throws Exception {
-        this.template = loadTemplate("OrderTemplate.html");
+    public ThresholdItemTemplate() throws Exception {
+        this.template = loadTemplate("NotifyThresholdItemTemplate.html");
     }
 
     private String loadTemplate(String customtemplate) throws Exception {
@@ -48,34 +48,30 @@ public class OrderTemplate {
         return sb.toString();
     }
 
-    public String buildNewLineForOrder(Order order, List<OrderEmailDto> details) {
+    public String buildTemplate(List<ItemDto> details) {
         StringBuilder sb = new StringBuilder();
 
-        for (OrderEmailDto detail : details) {
+        for (ItemDto detail : details) {
             sb.append(TR_START_TAG);
             addGiftCardLine(detail, sb);
             sb.append(TR_END_TAG);
         }
 
-        return template.replace("{{OrderDetail}}", sb.toString());
+        return template.replace("{{ThresholdItemDetail}}", sb.toString());
 
     }
 
-    private void addGiftCardLine(OrderEmailDto detail, StringBuilder sb) {
+    private void addGiftCardLine(ItemDto detail, StringBuilder sb) {
+        sb.append(TD_START_TAG);
+        sb.append(detail.getItemId());
+        sb.append(TD_END_TAG);
+
         sb.append(TD_START_TAG);
         sb.append(detail.getDescription());
         sb.append(TD_END_TAG);
 
         sb.append(TD_START_TAG);
-        sb.append(detail.getPrice());
-        sb.append(TD_END_TAG);
-
-        sb.append(TD_START_TAG);
         sb.append(detail.getCount());
-        sb.append(TD_END_TAG);
-
-        sb.append(TD_START_TAG);
-        Arrays.stream(detail.getCodes().split(",")).forEach(r -> sb.append(r));
         sb.append(TD_END_TAG);
     }
 }

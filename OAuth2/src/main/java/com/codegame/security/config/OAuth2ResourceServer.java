@@ -17,16 +17,25 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class OAuth2ResourceServer extends ResourceServerConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.cors().and()
+        http.cors()
+            .and()
             //            .anonymous().disable()
             //            .requestMatchers().antMatchers("/api/**", "**/secure/**").and()
             .authorizeRequests()
-            .antMatchers("/secure/two_factor_authentication/**").permitAll()
-            .antMatchers("/api/admin/**", "/api/user/**").access("hasAnyRole('ADMIN','USER')")
-            .antMatchers("/api/order/**").hasAnyRole("ORDER")
-            .anyRequest().authenticated()
-            .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
+            .antMatchers("/secure/two_factor_authentication/**")
+            .permitAll()
+            .antMatchers("/api/admin/**", "/api/user/**", "/api/order/list", "/api/order/refund", "/api/order/detail/**")
+            .access("hasAnyRole('ADMIN','USER')")
+            .antMatchers("/api/order/**")
+            .hasAnyRole("ORDER")
+            .anyRequest()
+            .authenticated()
+            .and()
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .exceptionHandling()
+            .accessDeniedHandler(new OAuth2AccessDeniedHandler());
     }
 
 }

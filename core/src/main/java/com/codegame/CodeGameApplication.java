@@ -2,6 +2,7 @@ package com.codegame;
 
 import com.codegame.config.ApiLoggingFilter;
 import com.codegame.dto.OrderTemplate;
+import com.codegame.dto.ThresholdItemTemplate;
 import com.codegame.security.config.OTPTemplate;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -58,6 +59,11 @@ public class CodeGameApplication {
     @Bean
     public OrderTemplate getOrderTempate() throws Exception {
         return new OrderTemplate();
+    }
+
+    @Bean
+    public ThresholdItemTemplate getThresholdTemplate() throws Exception {
+        return new ThresholdItemTemplate();
     }
 
     @Bean

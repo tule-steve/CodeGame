@@ -1,13 +1,20 @@
 package com.codegame.schedule;
 
 import com.codegame.dto.CreateOrderRequest;
+import com.codegame.dto.ItemDto;
+import com.codegame.dto.LineItemDto;
 import com.codegame.dto.OrderEmailDto;
+import com.codegame.exception.GlobalValidationException;
+import com.codegame.model.GiftCard;
 import com.codegame.model.Item;
 import com.codegame.model.Order;
+import com.codegame.model.Setting;
 import com.codegame.repositories.GiftCodeRepository;
+import com.codegame.repositories.ItemRepository;
 import com.codegame.repositories.OrderRepository;
 import com.codegame.services.AdminService;
 import com.codegame.services.EmailService;
+import com.codegame.services.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -16,15 +23,20 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.mail.MessagingException;
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @Service
+@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
 @RequiredArgsConstructor
 public class ScheduleService {
 
@@ -40,7 +52,13 @@ public class ScheduleService {
 
     final AdminService adminSvc;
 
-    @Scheduled(fixedRate = 5000)
+    final ItemRepository itemRepo;
+
+    final OrderService orderSvc;
+
+    final GiftCodeRepository giftCodeRepo;
+
+    @Scheduled(fixedRate = 15000)
     public void sendOrderEmail() {
         List<Order> unsentOrder = orderRepo.findAllByIsSendEmailFalse();
         for (Order order : unsentOrder) {
@@ -65,13 +83,41 @@ public class ScheduleService {
         //        String authHeader = "Basic " + new String( encodedAuth );
         //        headers.set( "Authorization", authHeader );
         try {
-            Item[] itemData = restTemplate.getForEntity("https://keysgame.vn/wp-json/wc/v3/products",
-                                                        Item[].class).getBody();
-            adminSvc.createItem(Arrays.asList(itemData));
+            Item[] itemData = {};
+            int i = 0;
+            do {
+                i++;
+                itemData = restTemplate.getForEntity(
+                        "https://keysgame.vn/wp-json/wc/v3/products?per_page=100& page=" + i,
+                        Item[].class).getBody();
+                adminSvc.createItem(Arrays.asList(itemData));
+            } while (itemData.length > 0);
+
         } catch (HttpStatusCodeException e) {
-            ResponseEntity.status(e.getRawStatusCode())
-                          .headers(e.getResponseHeaders())
-                          .body(e.getResponseBodyAsString());
+
+            logger.error("error on getting items", ResponseEntity.status(e.getRawStatusCode())
+                                                                 .headers(e.getResponseHeaders())
+                                                                 .body(e.getResponseBodyAsString()));
         }
     }
+
+    @Scheduled(fixedRate = 15000)
+    public void processApprovedRefund() {
+        List<Order> unsentOrder = orderRepo.findAllByStatus(GiftCard.Status.APPROVED_FOR_REFUND);
+        for (Order order : unsentOrder) {
+            try {
+                orderSvc.refundOrder(order);
+            } catch (Exception ex) {
+                logger.error("error", ex);
+            }
+        }
+    }
+
+        @Scheduled(fixedRate = 300000)
+    public void notifyThresholdItem() throws MessagingException {
+        Setting setting = adminSvc.getSetting();
+        List<ItemDto> items = itemRepo.getThresholdItem(setting.getMinAmountAlert());
+        emailSvc.notifyThresholdItem(items);
+    }
+
 }

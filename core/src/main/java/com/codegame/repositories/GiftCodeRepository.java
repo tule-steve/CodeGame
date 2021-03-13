@@ -5,6 +5,7 @@ import com.codegame.model.GiftCard;
 import com.codegame.model.Setting;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -36,11 +37,18 @@ public interface GiftCodeRepository extends JpaRepository<GiftCard, Long>, JpaSp
     @Query(nativeQuery = true)
     List<OrderEmailDto> getOrderEmailDetail(Long orderId);
 
+    @Query(nativeQuery = true)
+    List<OrderEmailDto> getRefundEmailDetail(Long orderId);
+
 
     @Query("select a from Setting a")
     List<Setting> getSetting();
 
     @Query("select count(a.id) from GiftCard a where a.item.id = :itemId")
     Integer countAvailable(Long itemId);
+
+    @Modifying
+    @Query("update GiftCard set status = ?1 where giftCode in ?2")
+    Integer updateRefundedCodes(GiftCard.Status status, List<String> codes);
 
 }
