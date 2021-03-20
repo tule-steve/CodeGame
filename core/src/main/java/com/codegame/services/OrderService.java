@@ -58,21 +58,22 @@ public class OrderService {
         newOrder.setOrderDetail(request.toString());
         newOrder.setTransactionTotal(request.getTransactionTotal());
         newOrder.setStatus(GiftCard.Status.CREATED);
+        newOrder = orderRepo.save(newOrder);
 
+        List<GiftCard> availGiftCard;
+        Item currItm;
         for (LineItemDto lineItm : request.getLineItems()) {
-            Item currItm = itemRepo.findById(lineItm.getItemId())
+            currItm = itemRepo.findById(lineItm.getItemId())
                                    .orElseThrow(() -> new GlobalValidationException(
                                            "Cannot find item with id " + lineItm.getItemId()));
 
-            List<GiftCard> availGiftCard = giftCodeRepo.getCodeByItemId(currItm.getId(),
+            availGiftCard = giftCodeRepo.getCodeByItemId(currItm.getId(),
                                                                         GiftCard.Status.AVAILABLE);
             if (availGiftCard.size() < lineItm.getAmount()) {
                 throw new GlobalValidationException("Not enough gift code for item with id " + lineItm.getItemId());
             }
             newOrder.addGiftCards(availGiftCard.subList(0, lineItm.getAmount()), lineItm.getPrice());
         }
-
-        orderRepo.save(newOrder);
     }
 
     public void refundOrder(RefundRequest request) {

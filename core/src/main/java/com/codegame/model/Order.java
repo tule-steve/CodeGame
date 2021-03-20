@@ -53,7 +53,7 @@ public class Order {
     protected Boolean isSendEmail = false;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = {CascadeType.PERSIST})
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = {CascadeType.MERGE})
     List<GiftCard> codes = new ArrayList<>();
 
     public void addGiftCards(List<GiftCard> giftCards, Integer price){

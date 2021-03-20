@@ -26,13 +26,15 @@ public class ApiLoggingFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+        BufferedRequestWrapper bufferedRequest = null;
+        BufferedResponseWrapper bufferedResponse = null;
         try {
             HttpServletRequest httpServletRequest = (HttpServletRequest) request;
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
             Map<String, String> requestMap = this.getTypesafeRequestMap(httpServletRequest);
-            BufferedRequestWrapper bufferedRequest = new BufferedRequestWrapper(httpServletRequest);
-            BufferedResponseWrapper bufferedResponse = new BufferedResponseWrapper(httpServletResponse);
+            bufferedRequest = new BufferedRequestWrapper(httpServletRequest);
+            bufferedResponse = new BufferedResponseWrapper(httpServletResponse);
             String requestId = requestMap.containsKey(requestIdParamName) ? requestMap.get(requestIdParamName)
                                                                           : UUID.randomUUID().toString();
             MDC.put("REQUEST_ID", requestId);
@@ -55,8 +57,9 @@ public class ApiLoggingFilter implements Filter {
                 LOGGER.info(logResponse.toString());
                 MDC.clear();
             }
-        } catch (Throwable a) {
-            LOGGER.error("error on show request detail", a);
+        } catch (Exception ex) {
+            LOGGER.error("error on show request detail", ex);
+            chain.doFilter(bufferedRequest, bufferedResponse);
         }
     }
 
