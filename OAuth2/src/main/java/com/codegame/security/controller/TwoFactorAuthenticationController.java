@@ -8,6 +8,7 @@ import com.codegame.security.services.OTPService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -57,6 +58,12 @@ public class TwoFactorAuthenticationController {
             LOG.error("Error on sending the OTP email", ex);
             throw new GlobalValidationException("error on sending OTP email");
         }
+
+//        ServletRequestAttributes ra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+//        if (ra != null) {
+//            overwriteSetCookie(ra.getResponse());
+//        }
+
 //        return "loginSecret"; // Show the form to enter the 2FA secret
 //        return ;
         return ResponseEntity.ok(new LoginResponse(HttpStatus.OK, email, "sent the OTP to email"));
@@ -119,6 +126,21 @@ public class TwoFactorAuthenticationController {
     	    return true;
         }else {
     	    return false;
+        }
+    }
+
+    private void overwriteSetCookie(HttpServletResponse response) {
+        if (response != null) {
+            Collection<String> headers = response.getHeaders(HttpHeaders.SET_COOKIE);
+            boolean firstHeader = true;
+            for (String header : headers) { // there can be multiple Set-Cookie attributes
+                if (firstHeader) {
+                    response.setHeader(HttpHeaders.SET_COOKIE, String.format("%s; %s", header, "SameSite=None")); // set
+                    firstHeader = false;
+                    continue;
+                }
+                response.addHeader(HttpHeaders.SET_COOKIE, String.format("%s; %s", header, "SameSite=None")); // add
+            }
         }
     }
 }

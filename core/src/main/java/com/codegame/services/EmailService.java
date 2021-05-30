@@ -41,7 +41,7 @@ public class EmailService {
 
         String message = template.buildNewLineForOrder(order, detail);
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
-        helper.setFrom("tule.java@gmail.com");
+        helper.setFrom("stephenle1412@gmail.com");
         helper.setTo(order.getEmail());
         helper.setSubject("Order: " + order.getOrderId());
         helper.setText(message, true);
@@ -55,7 +55,7 @@ public class EmailService {
 
         String message = thresholdItemTemplate.buildTemplate(detail);
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
-        helper.setFrom("tule.java@gmail.com");
+        helper.setFrom("stephenle1412@gmail.com");
         helper.setTo("stephenle1412@gmail.com");
         helper.setSubject("Cảnh báo về item sắp hết hàng");
         helper.setText(message, true);

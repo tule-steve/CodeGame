@@ -66,6 +66,9 @@ public class Item {
     @Column(name = "price")
     int price = 0;
 
+    @Column(name = "is_unpublished")
+    Boolean isUnpublished = false;
+
     @Column(name = "date_created", updatable = false)
     @CreationTimestamp
     protected LocalDateTime dateCreated;

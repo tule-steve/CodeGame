@@ -1,11 +1,14 @@
 package com.codegame.controller;
 
+import com.codegame.dto.ChangeStatusItemRequest;
 import com.codegame.dto.CreateOrderRequest;
+import com.codegame.dto.GetHistoryRequest;
 import com.codegame.dto.RefundRequest;
 import com.codegame.exception.GlobalValidationException;
 import com.codegame.model.GiftCard;
 import com.codegame.model.Item;
 import com.codegame.repositories.GiftCodeRepository;
+import com.codegame.services.AdminService;
 import com.codegame.services.OrderService;
 import com.codegame.specifications.GiftCardFilter;
 import com.codegame.specifications.OrderFilter;
@@ -31,6 +34,8 @@ public class OrderController {
 
     final GiftCodeRepository giftRepo;
 
+    private final AdminService adminSvc;
+
     @GetMapping(value = "/list")
     public Object list(OrderFilter filter) {
         return orderSvc.getOrderList(filter);
@@ -55,9 +60,9 @@ public class OrderController {
 
     @PostMapping(value = "/create")
     public Object createOrder(@Validated @RequestBody CreateOrderRequest request) {
-        orderSvc.createOrder(request);
-        return ResponseEntity.ok(CommonResponse.buildOkData("received the order request"));
+        return ResponseEntity.ok(orderSvc.createOrder(request));
     }
+
 
     @GetMapping(value = "/check-item/{itemId}")
     public Object getGiftCount(@PathVariable Long itemId) {
@@ -65,6 +70,18 @@ public class OrderController {
         response.put("item", itemId);
         response.put("amount", giftRepo.countAvailable(itemId));
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping(value = "/item/update-status")
+    public Object getGiftCount(@RequestBody @Validated ChangeStatusItemRequest request) {
+        adminSvc.updateItemStatus(request);
+        return ResponseEntity.ok(CommonResponse.buildOkData("updated status"));
+    }
+
+    @PostMapping(value = "/history")
+    public Object getHistory(@Validated @RequestBody GetHistoryRequest request) {
+        adminSvc.getHistory(request);
+        return ResponseEntity.ok(adminSvc.getHistory(request));
     }
 
 }

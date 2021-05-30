@@ -5,6 +5,7 @@ import com.codegame.dto.ItemDto;
 import com.codegame.dto.RefundRequest;
 import com.codegame.model.Item;
 import com.codegame.model.Setting;
+import com.codegame.schedule.ScheduleService;
 import com.codegame.services.AdminService;
 import com.codegame.specifications.GiftCardFilter;
 import com.codegame.specifications.ItemFilter;
@@ -24,6 +25,8 @@ import java.util.List;
 public class AdminController {
 
     final AdminService adminSvc;
+
+    final ScheduleService scheduleSvc;
 
     @PostMapping(value = "/approach_refund")
     public ResponseEntity refund(@RequestBody RefundRequest request) {
@@ -62,7 +65,11 @@ public class AdminController {
 
     @GetMapping(value = "/items")
     public List<ItemDto> getItem(@RequestParam(value = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-                                 @RequestParam(value = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+                                 @RequestParam(value = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+                                 @RequestParam(value = "reload", required = false, defaultValue = "false") Boolean isReload) {
+        if(isReload){
+            scheduleSvc.updateItemData();
+        }
         return adminSvc.getItemDetails(from, to);
     }
 

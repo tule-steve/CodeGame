@@ -17,9 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,7 +46,7 @@ public class OrderService {
         return giftCodeRepo.findAll(filter);
     }
 
-    public void createOrder(CreateOrderRequest request) {
+    public Map<Long, List<String>> createOrder(CreateOrderRequest request) {
         if(orderRepo.findByOrderId(request.getOrderId()) != null){
             throw new GlobalValidationException("order " + request.getOrderId() + " is created before");
         }
@@ -62,18 +60,27 @@ public class OrderService {
 
         List<GiftCard> availGiftCard;
         Item currItm;
+        Map<Long, List<String>> response = new HashMap<>();
+        List<String> codeList;
+        List<GiftCard> giftCodeList;
         for (LineItemDto lineItm : request.getLineItems()) {
             currItm = itemRepo.findById(lineItm.getItemId())
                                    .orElseThrow(() -> new GlobalValidationException(
                                            "Cannot find item with id " + lineItm.getItemId()));
+
 
             availGiftCard = giftCodeRepo.getCodeByItemId(currItm.getId(),
                                                                         GiftCard.Status.AVAILABLE);
             if (availGiftCard.size() < lineItm.getAmount()) {
                 throw new GlobalValidationException("Not enough gift code for item with id " + lineItm.getItemId());
             }
-            newOrder.addGiftCards(availGiftCard.subList(0, lineItm.getAmount()), lineItm.getPrice());
+            giftCodeList = availGiftCard.subList(0, lineItm.getAmount());
+            codeList = giftCodeList.stream().map(GiftCard::getGiftCode).collect(Collectors.toList());
+            response.put(currItm.getId(), codeList);
+            newOrder.addGiftCards(giftCodeList, lineItm.getPrice());
         }
+
+        return response;
     }
 
     public void refundOrder(RefundRequest request) {

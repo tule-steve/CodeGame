@@ -20,4 +20,8 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
 
     List<Order> findAllByStatus(GiftCard.Status status);
 
+    List<Order> findDistinctByEmail(String email);
+
+    List<Order> findDistinctByEmailAndOrderIdIn(String email, List<Long> orderIds);
+
 }
